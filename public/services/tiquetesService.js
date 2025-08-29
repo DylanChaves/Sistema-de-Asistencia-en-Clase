@@ -96,8 +96,7 @@ export async function borrarTiquete(tiqueteId) {
       throw new Error(`HTTP ${respuesta.status} al borrar tiquete`);
     }
 
-    // json-server normalmente responde 200 con {} en DELETE.
-    // Si viniera 204 (sin contenido), evita fallar al hacer .json()
+   
     try {
       return await respuesta.json();
     } catch {

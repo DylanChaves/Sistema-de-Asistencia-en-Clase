@@ -17,3 +17,22 @@ export async function obtenerUsuario(usuario, contrasena) {
     throw error;
   }
 }
+
+export async function registrarUsuario({ usuario, contrasena, rol }) {
+  try {
+    const resp = await fetch("http://localhost:3001/usuarios", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario, contrasena, rol })
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} al registrar usuario`);
+    }
+
+    return await resp.json();
+  } catch (error) {
+    console.error("Error al registrar usuario:", error);
+    throw error;
+  }
+}

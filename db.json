@@ -17,12 +17,24 @@
       "usuario": "profe",
       "contrasena": "admin",
       "rol": "profesor"
+    },
+    {
+      "id": "8100",
+      "usuario": "pedro",
+      "contrasena": "123",
+      "rol": "estudiante"
+    },
+    {
+      "id": "501e",
+      "usuario": "pepe",
+      "contrasena": "|123",
+      "rol": "profesor"
     }
   ],
   "tiquetes": [
     {
       "id": "101",
-      "usuarioId": 1,
+      "usuarioId": "1",
       "nombre": "adrian",
       "consulta": "No me funciona el método map",
       "fechaHora": "2025-08-25T09:15:00Z",
@@ -30,7 +42,7 @@
     },
     {
       "id": "102",
-      "usuarioId": 2,
+      "usuarioId": "2",
       "nombre": "karla",
       "consulta": "¿Cómo usar filter en JavaScript?",
       "fechaHora": "2025-08-26T14:22:00Z",
@@ -50,6 +62,46 @@
       "nombre": "adrian",
       "consulta": "dsdfd",
       "fechaHora": "2025-08-29T17:31:22.989Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "e3f7",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "asa",
+      "fechaHora": "2025-08-29T19:59:12.285Z",
+      "estado": "atendido"
+    },
+    {
+      "id": "b216",
+      "usuarioId": "8100",
+      "nombre": "pedro",
+      "consulta": "qdd",
+      "fechaHora": "2025-08-29T20:01:08.195Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "3275",
+      "usuarioId": "8100",
+      "nombre": "pedro",
+      "consulta": "xd",
+      "fechaHora": "2025-08-29T20:09:30.502Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "11a3",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "sdsd",
+      "fechaHora": "2025-08-29T20:22:02.040Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "5627",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "sdfd",
+      "fechaHora": "2025-08-29T20:35:21.024Z",
       "estado": "pendiente"
     }
   ]

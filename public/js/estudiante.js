@@ -1,95 +1,87 @@
-import { Sesion, protegerRuta, formatearFecha } from "./sesion.js";
-import { crearTiquete, getPendientesDe, borrarTiquete } from "../services/tiquetesService.js";
+import { protegerRuta, Sesion, formatearFecha } from "./sesion.js";
+import { crearTiquete, getPendientesDe } from "../services/tiquetesService.js";
 
-const usuarioAutenticado = protegerRuta("estudiante");
-if (!usuarioAutenticado) {
- 
-  stopExecution && stopExecution();
+// Proteger ruta para ESTUDIANTE
+let usuarioActual = protegerRuta("estudiante");
+if (!usuarioActual) {
+  // Tu server sirve el login en '/', no en '/login'
+  window.location.href = "../pages/login.html";
 }
 
-const campoConsulta = document.getElementById("consulta");
-const botonCrearTiquete = document.getElementById("btnCrearTiquete");
-const botonRefrescarPendientes = document.getElementById("btnRefrescar");
-const listaTiquetesPendientes = document.getElementById("listaPendientes");
-const mensajeCreacionTiquete = document.getElementById("msgCrear");
-const mensajePendientes = document.getElementById("msgPendientes");
-const botonCerrarSesion = document.getElementById("btnSalir");
+// ===== DOM =====
+const btnSalir        = document.getElementById("btnSalir");
+const txtConsulta     = document.getElementById("consulta");
+const btnCrearTiquete = document.getElementById("btnCrearTiquete");
+const msgCrear        = document.getElementById("msgCrear");
 
-botonCerrarSesion?.addEventListener("click", () => {
+const listaPendientes = document.getElementById("listaPendientes");
+const msgPendientes   = document.getElementById("msgPendientes");
+const btnRefrescar    = document.getElementById("btnRefrescar");
+
+// ===== Eventos =====
+btnSalir.addEventListener("click", () => {
   Sesion.clear();
-  window.location.href = "/login";
+  window.location.href = "../pages/login.html";
 });
 
-async function cargarTiquetesPendientesDelEstudiante() {
-  mensajePendientes.textContent = "Cargando...";
-  listaTiquetesPendientes.innerHTML = "";
+btnRefrescar.addEventListener("click", cargarPendientes);
 
-  try {
-    const tiquetesPendientes = await getPendientesDe(usuarioAutenticado.id);
-
-    if (!tiquetesPendientes.length) {
-      mensajePendientes.textContent = "No tienes tiquetes pendientes.";
-      return;
-    }
-
-    mensajePendientes.textContent = "";
-    tiquetesPendientes.forEach((tiquete) => {
-      const elementoLista = document.createElement("li");
-      elementoLista.className = "list-group-item d-flex justify-content-between align-items-start";
-      elementoLista.innerHTML = `
-        <div class="me-3">
-          <div><strong>${tiquete.consulta || "(sin texto)"} </strong></div>
-          <small class="text-muted">Fecha: ${formatearFecha(tiquete.fechaHora)}</small>
-          <small class="text-muted d-block">Estado: ${tiquete.estado}</small>
-        </div>
-        <button class="btn btn-sm btn-outline-danger" data-accion="borrar" data-id="${tiquete.id}">Eliminar</button>
-      `;
-      listaTiquetesPendientes.appendChild(elementoLista);
-    });
-  } catch (errorCargaPendientes) {
-    console.error(errorCargaPendientes);
-    mensajePendientes.textContent = "Error al cargar pendientes.";
-  }
-}
-
-botonCrearTiquete?.addEventListener("click", async () => {
-  const textoConsulta = (campoConsulta.value || "").trim();
-
-  if (!textoConsulta) {
-    mensajeCreacionTiquete.textContent = "Por favor escribe tu consulta.";
+btnCrearTiquete.addEventListener("click", async () => {
+  const texto = (txtConsulta.value || "").trim();
+  if (!texto) {
+    msgCrear.textContent = "Escribe tu consulta.";
+    txtConsulta.focus();
     return;
   }
 
-  mensajeCreacionTiquete.textContent = "Enviando...";
-  try {
-    await crearTiquete(usuarioAutenticado, textoConsulta);
-    campoConsulta.value = "";
-    mensajeCreacionTiquete.textContent = "¡Tiquete enviado a la cola!";
-    await cargarTiquetesPendientesDelEstudiante();
-  } catch (errorCreacion) {
-    console.error(errorCreacion);
-    mensajeCreacionTiquete.textContent = "Error al crear el tiquete.";
-  }
-});
-
-listaTiquetesPendientes?.addEventListener("click", async (eventoClick) => {
-  const botonEliminar = eventoClick.target?.closest("button[data-accion='borrar']");
-  if (!botonEliminar) return;
-
-  const tiqueteId = botonEliminar.getAttribute("data-id");
-  botonEliminar.disabled = true;
-  const textoOriginalBoton = botonEliminar.textContent;
-  botonEliminar.textContent = "Eliminando...";
+  btnCrearTiquete.disabled = true;
+  msgCrear.textContent = "Enviando...";
 
   try {
-    await borrarTiquete(tiqueteId);
-    await cargarTiquetesPendientesDelEstudiante();
-  } catch (errorBorrado) {
-    console.error(errorBorrado);
+    await crearTiquete(usuarioActual, texto);
+    msgCrear.textContent = "¡Tiquete enviado a la cola!";
+    txtConsulta.value = "";
+    await cargarPendientes();
+  } catch (err) {
+    console.error(err);
+    msgCrear.textContent = "Error al enviar el tiquete.";
   } finally {
-    botonEliminar.disabled = false;
-    botonEliminar.textContent = textoOriginalBoton;
+    btnCrearTiquete.disabled = false;
   }
 });
 
-cargarTiquetesPendientesDelEstudiante();
+// ===== Funciones =====
+async function cargarPendientes() {
+  msgPendientes.textContent = "Cargando...";
+  listaPendientes.innerHTML = "";
+
+  try {
+    const data = await getPendientesDe(usuarioActual.id);
+    if (!Array.isArray(data) || data.length === 0) {
+      msgPendientes.textContent = "No tienes tiquetes pendientes.";
+      return;
+    }
+
+    // Ordenar por fecha descendente
+    data.sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
+    msgPendientes.textContent = "";
+
+    data.forEach(t => {
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-start";
+      li.innerHTML = `
+        <div>
+          <div class="fw-semibold">${t.consulta || "(sin texto)"}</div>
+          <small class="text-muted">${formatearFecha(t.fechaHora)} · estado: ${t.estado}</small>
+        </div>
+      `;
+      listaPendientes.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    msgPendientes.textContent = "Error al cargar pendientes.";
+  }
+}
+
+// ===== Init =====
+cargarPendientes();
