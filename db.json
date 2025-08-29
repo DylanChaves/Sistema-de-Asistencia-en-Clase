@@ -1,0 +1,56 @@
+{
+  "usuarios": [
+    {
+      "id": "1",
+      "usuario": "adrian",
+      "contrasena": "1234",
+      "rol": "estudiante"
+    },
+    {
+      "id": "2",
+      "usuario": "karla",
+      "contrasena": "abcd",
+      "rol": "estudiante"
+    },
+    {
+      "id": "3",
+      "usuario": "profe",
+      "contrasena": "admin",
+      "rol": "profesor"
+    }
+  ],
+  "tiquetes": [
+    {
+      "id": "101",
+      "usuarioId": 1,
+      "nombre": "adrian",
+      "consulta": "No me funciona el método map",
+      "fechaHora": "2025-08-25T09:15:00Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "102",
+      "usuarioId": 2,
+      "nombre": "karla",
+      "consulta": "¿Cómo usar filter en JavaScript?",
+      "fechaHora": "2025-08-26T14:22:00Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "103",
+      "usuarioId": 1,
+      "nombre": "adrian",
+      "consulta": "¿Qué significa scope en JS?",
+      "fechaHora": "2025-08-27T15:40:00Z",
+      "estado": "atendido"
+    },
+    {
+      "id": "45a0",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "dsdfd",
+      "fechaHora": "2025-08-29T17:31:22.989Z",
+      "estado": "pendiente"
+    }
+  ]
+}

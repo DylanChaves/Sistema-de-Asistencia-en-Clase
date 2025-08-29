@@ -1,0 +1,25 @@
+{
+  "dependencies": {
+    "express": "^5.1.0"
+  },
+  "name": "sistema-de-asistencia-en-clase",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DylanChaves/Sistema-de-Asistencia-en-Clase.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DylanChaves/Sistema-de-Asistencia-en-Clase/issues"
+  },
+  "homepage": "https://github.com/DylanChaves/Sistema-de-Asistencia-en-Clase#readme"
+}
