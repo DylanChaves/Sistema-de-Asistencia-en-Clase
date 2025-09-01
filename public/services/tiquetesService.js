@@ -26,68 +26,118 @@ export async function crearTiquete(usuarioActual, consultaTexto) {
   }
 }
 
-// Listar pendientes de un estudiante
-export async function getPendientesDe(usuarioId) {
-  try {
-    const respuesta = await fetch("http://localhost:3001/tiquetes?estado=pendiente&usuarioId=" + usuarioId, {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
-
-    if (!respuesta.ok) {
-      throw new Error(`HTTP ${respuesta.status} al cargar pendientes`);
-    }
-
-    return await respuesta.json();
-  } catch (error) {
-    console.error("Error al cargar pendientes:", error);
-    throw error;
-  }
-}
-
-
-// Historial de tiquetes atendidos
+// Obtener TODOS los tiquetes (para profesor)
 export async function getHistorial() {
   try {
-    const respuesta = await fetch("http://localhost:3001/tiquetes", {
+    const resp = await fetch("http://localhost:3001/tiquetes", {
       method: "GET",
       headers: { "Content-Type": "application/json" }
     });
 
-    if (!respuesta.ok) {
-      throw new Error(`HTTP ${respuesta.status} al cargar historial`);
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} al obtener historial`);
     }
 
-    return await respuesta.json();
+    return await resp.json();
   } catch (error) {
-    console.error("Error al cargar historial:", error);
+    console.error("Error al obtener historial:", error);
     throw error;
   }
 }
 
-// Marcar un tiquete como atendido
+// Obtener PENDIENTES de un ESTUDIANTE
+export async function getPendientesDe(usuarioId) {
+  try {
+    const url = `http://localhost:3001/tiquetes?estado=pendiente&usuarioId=${encodeURIComponent(usuarioId)}`;
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} al obtener pendientes del estudiante`);
+    }
+
+    return await resp.json();
+  } catch (error) {
+    console.error("Error al obtener pendientes:", error);
+    throw error;
+  }
+}
+
+// (NUEVO) Obtener ATENDIDOS de un ESTUDIANTE
+export async function getAtendidosDe(usuarioId) {
+  try {
+    const url = `http://localhost:3001/tiquetes?estado=atendido&usuarioId=${encodeURIComponent(usuarioId)}`;
+    const resp = await fetch(url, {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} al obtener atendidos del estudiante`);
+    }
+
+    return await resp.json();
+  } catch (error) {
+    console.error("Error al obtener atendidos:", error);
+    throw error;
+  }
+}
+
+// Marcar ATENDIDO (rápido, sin respuesta)
 export async function marcarAtendido(tiqueteId) {
   try {
-    const respuesta = await fetch("http://localhost:3001/tiquetes/" + tiqueteId, {
+    const payload = { estado: "atendido" };
+
+    const respuesta = await fetch(`http://localhost:3001/tiquetes/${tiqueteId}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ estado: "atendido" })
+      body: JSON.stringify(payload)
     });
 
     if (!respuesta.ok) {
-      throw new Error(`HTTP ${respuesta.status} al actualizar tiquete`);
+      throw new Error(`HTTP ${respuesta.status} al marcar atendido`);
     }
 
     return await respuesta.json();
   } catch (error) {
-    console.error("Error al actualizar tiquete:", error);
+    console.error("Error al marcar atendido:", error);
     throw error;
   }
 }
 
+// (NUEVO) Responder un tiquete (profesor)
+export async function responderTiquete(tiqueteId, respuestaTexto, profesorUsuario) {
+  try {
+    const payload = {
+      estado: "atendido",
+      respuesta: (respuestaTexto ?? "").trim(),
+      respondidoPor: profesorUsuario,
+      fechaRespuesta: new Date().toISOString()
+    };
+
+    const resp = await fetch(`http://localhost:3001/tiquetes/${tiqueteId}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) {
+      throw new Error(`HTTP ${resp.status} al responder tiquete`);
+    }
+
+    return await resp.json();
+  } catch (error) {
+    console.error("Error al responder tiquete:", error);
+    throw error;
+  }
+}
+
+// BORRAR un tiquete (profesor)
 export async function borrarTiquete(tiqueteId) {
   try {
-    const respuesta = await fetch("http://localhost:3001/tiquetes/" + tiqueteId, {
+    const respuesta = await fetch(`http://localhost:3001/tiquetes/${tiqueteId}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" }
     });
@@ -96,11 +146,10 @@ export async function borrarTiquete(tiqueteId) {
       throw new Error(`HTTP ${respuesta.status} al borrar tiquete`);
     }
 
-   
     try {
       return await respuesta.json();
     } catch {
-      return true; 
+      return true;
     }
   } catch (error) {
     console.error("Error al borrar tiquete:", error);

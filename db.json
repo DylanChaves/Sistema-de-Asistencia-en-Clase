@@ -29,24 +29,22 @@
       "usuario": "pepe",
       "contrasena": "|123",
       "rol": "profesor"
+    },
+    {
+      "id": "6929",
+      "usuario": "ja",
+      "contrasena": "1234",
+      "rol": "estudiante"
     }
   ],
   "tiquetes": [
-    {
-      "id": "101",
-      "usuarioId": "1",
-      "nombre": "adrian",
-      "consulta": "No me funciona el método map",
-      "fechaHora": "2025-08-25T09:15:00Z",
-      "estado": "pendiente"
-    },
     {
       "id": "102",
       "usuarioId": "2",
       "nombre": "karla",
       "consulta": "¿Cómo usar filter en JavaScript?",
       "fechaHora": "2025-08-26T14:22:00Z",
-      "estado": "pendiente"
+      "estado": "atendido"
     },
     {
       "id": "103",
@@ -62,7 +60,7 @@
       "nombre": "adrian",
       "consulta": "dsdfd",
       "fechaHora": "2025-08-29T17:31:22.989Z",
-      "estado": "pendiente"
+      "estado": "atendido"
     },
     {
       "id": "e3f7",
@@ -78,7 +76,7 @@
       "nombre": "pedro",
       "consulta": "qdd",
       "fechaHora": "2025-08-29T20:01:08.195Z",
-      "estado": "pendiente"
+      "estado": "atendido"
     },
     {
       "id": "3275",
@@ -86,7 +84,7 @@
       "nombre": "pedro",
       "consulta": "xd",
       "fechaHora": "2025-08-29T20:09:30.502Z",
-      "estado": "pendiente"
+      "estado": "atendido"
     },
     {
       "id": "11a3",
@@ -94,7 +92,7 @@
       "nombre": "adrian",
       "consulta": "sdsd",
       "fechaHora": "2025-08-29T20:22:02.040Z",
-      "estado": "pendiente"
+      "estado": "atendido"
     },
     {
       "id": "5627",
@@ -102,6 +100,54 @@
       "nombre": "adrian",
       "consulta": "sdfd",
       "fechaHora": "2025-08-29T20:35:21.024Z",
+      "estado": "atendido"
+    },
+    {
+      "id": "bb86",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "sdd",
+      "fechaHora": "2025-08-29T21:03:15.325Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "1168",
+      "usuarioId": "6929",
+      "nombre": "ja",
+      "consulta": "dff",
+      "fechaHora": "2025-08-29T21:09:57.484Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "fc33",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "sdfsd",
+      "fechaHora": "2025-08-29T21:14:02.305Z",
+      "estado": "atendido"
+    },
+    {
+      "id": "2b78",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "hshd",
+      "fechaHora": "2025-08-29T21:14:27.419Z",
+      "estado": "atendido"
+    },
+    {
+      "id": "04ca",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "efef",
+      "fechaHora": "2025-08-30T18:02:10.237Z",
+      "estado": "pendiente"
+    },
+    {
+      "id": "50ce",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "hola esto es una prueba",
+      "fechaHora": "2025-08-30T18:40:54.607Z",
       "estado": "pendiente"
     }
   ]

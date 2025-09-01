@@ -1,5 +1,5 @@
 import { protegerRuta, Sesion, formatearFecha } from "./sesion.js";
-import { crearTiquete, getPendientesDe } from "../services/tiquetesService.js";
+import { crearTiquete, getPendientesDe, getAtendidosDe  } from "../services/tiquetesService.js";
 
 // Proteger ruta para ESTUDIANTE
 let usuarioActual = protegerRuta("estudiante");
@@ -17,6 +17,11 @@ const msgCrear        = document.getElementById("msgCrear");
 const listaPendientes = document.getElementById("listaPendientes");
 const msgPendientes   = document.getElementById("msgPendientes");
 const btnRefrescar    = document.getElementById("btnRefrescar");
+
+const listaAtendidos = document.getElementById("listaAtendidos");
+const msgAtendidos   = document.getElementById("msgAtendidos");
+const btnRefrescarAtendidos = document.getElementById("btnRefrescarAtendidos");
+
 
 // ===== Eventos =====
 btnSalir.addEventListener("click", () => {
@@ -50,6 +55,37 @@ btnCrearTiquete.addEventListener("click", async () => {
   }
 });
 
+btnRefrescarAtendidos?.addEventListener("click", cargarAtendidos);
+
+async function cargarAtendidos() {
+  msgAtendidos.textContent = "Cargando...";
+  listaAtendidos.innerHTML = "";
+  try {
+    const data = await getAtendidosDe(usuarioActual.id);
+    if (!Array.isArray(data) || data.length === 0) {
+      msgAtendidos.textContent = "No tienes tiquetes atendidos.";
+      return;
+    }
+    // Ordenar por fecha de respuesta o fecha de creación (desc)
+    data.sort((a, b) => new Date(b.fechaRespuesta || b.fechaHora) - new Date(a.fechaRespuesta || a.fechaHora));
+    msgAtendidos.textContent = "";
+
+    data.forEach(t => {
+      const li = document.createElement("li");
+      li.className = "list-group-item";
+      li.innerHTML = `
+        <div class="fw-semibold">${t.consulta || "(sin texto)"}</div>
+        <small class="text-muted d-block">${formatearFecha(t.fechaHora)} · estado: ${t.estado}</small>
+        ${t.respuesta ? `<div class="mt-2"><span class="badge bg-success">Respuesta</span> ${t.respuesta}</div>` : ""}
+        ${t.respondidoPor ? `<small class="text-muted d-block">Respondido por: ${t.respondidoPor} · ${t.fechaRespuesta ? formatearFecha(t.fechaRespuesta) : ""}</small>` : ""}
+      `;
+      listaAtendidos.appendChild(li);
+    });
+  } catch (err) {
+    console.error(err);
+    msgAtendidos.textContent = "Error al cargar atendidos.";
+  }
+}
 // ===== Funciones =====
 async function cargarPendientes() {
   msgPendientes.textContent = "Cargando...";
@@ -85,3 +121,4 @@ async function cargarPendientes() {
 
 // ===== Init =====
 cargarPendientes();
+cargarAtendidos();

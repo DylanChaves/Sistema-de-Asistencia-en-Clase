@@ -1,5 +1,5 @@
 import { protegerRuta, Sesion, formatearFecha } from "./sesion.js";
-import { getHistorial, marcarAtendido, borrarTiquete } from "../services/tiquetesService.js";
+import { getHistorial, marcarAtendido, borrarTiquete, responderTiquete } from "../services/tiquetesService.js";
 import { registrarUsuario } from "../services/usuariosService.js"; 
 
 // Proteger ruta para PROFESOR
@@ -103,7 +103,7 @@ async function cargarTodo() {
   }
 }
 
-function renderCola(items) {
+/* function renderCola(items) {
   listaCola.innerHTML = "";
   items
     .sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora)) // los más viejos primero en cola
@@ -148,7 +148,7 @@ function renderCola(items) {
       btn.disabled = false;
     }
   }, { once: true }); // se vuelve a adjuntar en cada render para mantener limpio
-}
+} */
 
 function renderHistorial(items) {
   listaHistorial.innerHTML = "";
@@ -163,5 +163,56 @@ function renderHistorial(items) {
   });
 }
 
+function renderCola(items) {
+  listaCola.innerHTML = "";
+  items
+    .sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora))
+    .forEach(t => {
+      const li = document.createElement("li");
+      li.className = "list-group-item d-flex justify-content-between align-items-start";
+      li.innerHTML = `
+        <div class="me-3">
+          <div class="fw-semibold">${t.nombre} — ${t.consulta || "(sin texto)"} </div>
+          <small class="text-muted">${formatearFecha(t.fechaHora)} · id: ${t.id}</small>
+        </div>
+        <div class="d-flex gap-2">
+          <button class="btn btn-sm btn-primary" data-accion="responder" data-id="${t.id}">Responder</button>
+          <button class="btn btn-sm btn-success" data-accion="atender" data-id="${t.id}">Atendido</button>
+          <button class="btn btn-sm btn-outline-danger" data-accion="borrar" data-id="${t.id}">Borrar</button>
+        </div>
+      `;
+      listaCola.appendChild(li);
+    });
+
+  // Delegación de eventos (simple, con prompt)
+  listaCola.addEventListener("click", async (e) => {
+    const btn = e.target.closest("button[data-accion]");
+    if (!btn) return;
+
+    const id = btn.getAttribute("data-id");
+    const accion = btn.getAttribute("data-accion");
+    try {
+      btn.disabled = true;
+
+      if (accion === "responder") {
+        const respuesta = prompt("Escribe la respuesta para el estudiante:");
+        if (respuesta && respuesta.trim()) {
+          await responderTiquete(id, respuesta, usuarioActual.usuario);
+        }
+      } else if (accion === "atender") {
+        await marcarAtendido(id);
+      } else if (accion === "borrar") {
+        await borrarTiquete(id);
+      }
+
+      await cargarTodo();
+    } catch (err) {
+      console.error(err);
+      alert("Ocurrió un error procesando el tiquete.");
+    } finally {
+      btn.disabled = false;
+    }
+  }, { once: true });
+}
 // ===== Init =====
 cargarTodo();
