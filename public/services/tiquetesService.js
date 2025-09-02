@@ -1,12 +1,14 @@
-// Crear un tiquete (estudiante)
-export async function crearTiquete(usuarioActual, consultaTexto) {
+export async function crearTiquete(usuarioActual, consultaTexto, profesorSeleccionado) {
   try {
     const nuevoTiquete = {
       usuarioId: usuarioActual.id,
       nombre: usuarioActual.usuario,
       consulta: (consultaTexto ?? "").trim(),
       fechaHora: new Date().toISOString(),
-      estado: "pendiente"
+      estado: "pendiente",
+      // Asignación de profesor
+      profesorId: profesorSeleccionado?.id || null,
+      profesorNombre: profesorSeleccionado?.usuario || null
     };
 
     const respuesta = await fetch("http://localhost:3001/tiquetes", {
@@ -26,18 +28,14 @@ export async function crearTiquete(usuarioActual, consultaTexto) {
   }
 }
 
-// Obtener TODOS los tiquetes (para profesor)
-export async function getHistorial() {
+// Obtener TODOS los tiquetes del PROFESOR (filtrados por profesorId)
+export async function getHistorial(profesorId = null) {
   try {
-    const resp = await fetch("http://localhost:3001/tiquetes", {
-      method: "GET",
-      headers: { "Content-Type": "application/json" }
-    });
+    const base = "http://localhost:3001/tiquetes";
+    const url = profesorId ? `${base}?profesorId=${encodeURIComponent(profesorId)}` : base;
 
-    if (!resp.ok) {
-      throw new Error(`HTTP ${resp.status} al obtener historial`);
-    }
-
+    const resp = await fetch(url, { method: "GET", headers: { "Content-Type": "application/json" } });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status} al obtener historial`);
     return await resp.json();
   } catch (error) {
     console.error("Error al obtener historial:", error);
@@ -65,7 +63,7 @@ export async function getPendientesDe(usuarioId) {
   }
 }
 
-// (NUEVO) Obtener ATENDIDOS de un ESTUDIANTE
+// Obtener ATENDIDOS de un ESTUDIANTE
 export async function getAtendidosDe(usuarioId) {
   try {
     const url = `http://localhost:3001/tiquetes?estado=atendido&usuarioId=${encodeURIComponent(usuarioId)}`;
@@ -107,7 +105,7 @@ export async function marcarAtendido(tiqueteId) {
   }
 }
 
-// (NUEVO) Responder un tiquete (profesor)
+// Responder un tiquete (profesor)
 export async function responderTiquete(tiqueteId, respuestaTexto, profesorUsuario) {
   try {
     const payload = {

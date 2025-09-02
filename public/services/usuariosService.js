@@ -36,3 +36,17 @@ export async function registrarUsuario({ usuario, contrasena, rol }) {
     throw error;
   }
 }
+
+export async function getProfesores() {
+  try {
+    const resp = await fetch("http://localhost:3001/usuarios?rol=profesor", {
+      method: "GET",
+      headers: { "Content-Type": "application/json" }
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    return await resp.json();
+  } catch (e) {
+    console.error("Error al obtener profesores:", e);
+    throw e;
+  }
+}

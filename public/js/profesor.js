@@ -76,7 +76,35 @@ buscador.addEventListener("input", () => {
 });
 
 // ===== Carga y render =====
+
+
 async function cargarTodo() {
+  msgCola.textContent = "Cargando cola...";
+  msgHistorial.textContent = "Cargando historial...";
+  listaCola.innerHTML = "";
+  listaHistorial.innerHTML = "";
+
+  try {
+  // Ver SOLO mis tiquetes (filtrados por profesorId)
+    const todos = await getHistorial(usuarioActual.id);
+
+    colaPendientes = todos.filter(t => t.estado === "pendiente");
+    historialAtendido = todos
+      .filter(t => t.estado === "atendido")
+      .sort((a, b) => new Date(b.fechaHora) - new Date(a.fechaHora));
+
+    renderCola(colaPendientes);
+    renderHistorial(historialAtendido);
+
+    msgCola.textContent = colaPendientes.length ? "" : "No hay tiquetes en cola.";
+    msgHistorial.textContent = historialAtendido.length ? "" : "No hay historial.";
+  } catch (err) {
+    console.error(err);
+    msgCola.textContent = "Error al cargar cola.";
+    msgHistorial.textContent = "Error al cargar historial.";
+  }
+}
+/* async function cargarTodo() {
   msgCola.textContent = "Cargando cola...";
   msgHistorial.textContent = "Cargando historial...";
   listaCola.innerHTML = "";
@@ -103,52 +131,7 @@ async function cargarTodo() {
   }
 }
 
-/* function renderCola(items) {
-  listaCola.innerHTML = "";
-  items
-    .sort((a, b) => new Date(a.fechaHora) - new Date(b.fechaHora)) // los más viejos primero en cola
-    .forEach(t => {
-      const li = document.createElement("li");
-      li.className = "list-group-item d-flex justify-content-between align-items-start";
-      li.innerHTML = `
-        <div class="me-3">
-          <div class="fw-semibold">${t.nombre} — ${t.consulta || "(sin texto)"}</div>
-          <small class="text-muted">${formatearFecha(t.fechaHora)} · id: ${t.id}</small>
-        </div>
-        <div class="d-flex gap-2">
-          <button class="btn btn-sm btn-success" data-accion="atender" data-id="${t.id}">Atendido</button>
-          <button class="btn btn-sm btn-outline-danger" data-accion="borrar" data-id="${t.id}">Borrar</button>
-        </div>
-      `;
-      listaCola.appendChild(li);
-    });
-
-  // Delegación de eventos: atender/borrar
-  listaCola.addEventListener("click", async (e) => {
-    const btn = e.target.closest("button[data-accion]");
-    if (!btn) return;
-
-    const id = btn.getAttribute("data-id");
-    const accion = btn.getAttribute("data-accion");
-
-    try {
-      btn.disabled = true;
-
-      if (accion === "atender") {
-        await marcarAtendido(id);
-      } else if (accion === "borrar") {
-        await borrarTiquete(id);
-      }
-
-      await cargarTodo();
-    } catch (err) {
-      console.error(err);
-      alert("Ocurrió un error procesando el tiquete.");
-    } finally {
-      btn.disabled = false;
-    }
-  }, { once: true }); // se vuelve a adjuntar en cada render para mantener limpio
-} */
+ */
 
 function renderHistorial(items) {
   listaHistorial.innerHTML = "";
@@ -157,11 +140,41 @@ function renderHistorial(items) {
     li.className = "list-group-item";
     li.innerHTML = `
       <div class="fw-semibold">${t.nombre} — ${t.consulta || "(sin texto)"} </div>
-      <small class="text-muted">${formatearFecha(t.fechaHora)} · id: ${t.id}</small>
+      <small class="text-muted d-block">${formatearFecha(t.fechaHora)} · id: ${t.id}</small>
+      ${t.respuesta ? `<div class="mt-2"><span class="badge bg-success">Respuesta</span> ${t.respuesta}</div>` : ""}
+      ${t.respondidoPor ? `<small class="text-muted d-block">Respondido por: ${t.respondidoPor} · ${t.fechaRespuesta ? formatearFecha(t.fechaRespuesta) : ""}</small>` : ""}
     `;
     listaHistorial.appendChild(li);
   });
 }
+listaCola.addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-accion]");
+  if (!btn) return;
+
+  const id = btn.getAttribute("data-id");
+  const accion = btn.getAttribute("data-accion");
+  try {
+    btn.disabled = true;
+
+    if (accion === "responder") {
+      const respuesta = prompt("Escribe la respuesta para el estudiante:");
+      if (respuesta && respuesta.trim()) {
+        await responderTiquete(id, respuesta, usuarioActual.usuario);
+      }
+    } else if (accion === "atender") {
+      await marcarAtendido(id);
+    } else if (accion === "borrar") {
+      await borrarTiquete(id);
+    }
+
+    await cargarTodo();
+  } catch (err) {
+    console.error(err);
+    alert("Ocurrió un error procesando el tiquete.");
+  } finally {
+    btn.disabled = false;
+  }
+});
 
 function renderCola(items) {
   listaCola.innerHTML = "";
@@ -183,36 +196,25 @@ function renderCola(items) {
       `;
       listaCola.appendChild(li);
     });
-
-  // Delegación de eventos (simple, con prompt)
-  listaCola.addEventListener("click", async (e) => {
-    const btn = e.target.closest("button[data-accion]");
-    if (!btn) return;
-
-    const id = btn.getAttribute("data-id");
-    const accion = btn.getAttribute("data-accion");
-    try {
-      btn.disabled = true;
-
-      if (accion === "responder") {
-        const respuesta = prompt("Escribe la respuesta para el estudiante:");
-        if (respuesta && respuesta.trim()) {
-          await responderTiquete(id, respuesta, usuarioActual.usuario);
-        }
-      } else if (accion === "atender") {
-        await marcarAtendido(id);
-      } else if (accion === "borrar") {
-        await borrarTiquete(id);
-      }
-
-      await cargarTodo();
-    } catch (err) {
-      console.error(err);
-      alert("Ocurrió un error procesando el tiquete.");
-    } finally {
-      btn.disabled = false;
-    }
-  }, { once: true });
 }
+
+listaHistorial.addEventListener("click", async (e) => {
+  const btn = e.target.closest("button[data-accion='borrar-historial']");
+  if (!btn) return;
+
+  const id = btn.getAttribute("data-id");
+  try {
+    btn.disabled = true;
+    if (confirm("¿Borrar este tiquete atendido?")) {
+      await borrarTiquete(id);
+      await cargarTodo();
+    }
+  } catch (err) {
+    console.error(err);
+    alert("No se pudo borrar el tiquete atendido.");
+  } finally {
+    btn.disabled = false;
+  }
+});
 // ===== Init =====
 cargarTodo();

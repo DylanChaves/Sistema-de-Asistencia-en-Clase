@@ -35,6 +35,12 @@
       "usuario": "ja",
       "contrasena": "1234",
       "rol": "estudiante"
+    },
+    {
+      "id": "7b13",
+      "usuario": "barry",
+      "contrasena": "1234",
+      "rol": "profesor"
     }
   ],
   "tiquetes": [
@@ -108,7 +114,7 @@
       "nombre": "adrian",
       "consulta": "sdd",
       "fechaHora": "2025-08-29T21:03:15.325Z",
-      "estado": "pendiente"
+      "estado": "atendido"
     },
     {
       "id": "1168",
@@ -116,7 +122,10 @@
       "nombre": "ja",
       "consulta": "dff",
       "fechaHora": "2025-08-29T21:09:57.484Z",
-      "estado": "pendiente"
+      "estado": "atendido",
+      "respuesta": "holaaa",
+      "respondidoPor": "barry",
+      "fechaRespuesta": "2025-09-02T00:14:07.181Z"
     },
     {
       "id": "fc33",
@@ -149,6 +158,49 @@
       "consulta": "hola esto es una prueba",
       "fechaHora": "2025-08-30T18:40:54.607Z",
       "estado": "pendiente"
+    },
+    {
+      "id": "680f",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "sss",
+      "fechaHora": "2025-09-01T21:41:15.410Z",
+      "estado": "pendiente",
+      "profesorId": "7b13",
+      "profesorNombre": "barry"
+    },
+    {
+      "id": "1343",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "hola prueba",
+      "fechaHora": "2025-09-02T15:37:01.423Z",
+      "estado": "atendido",
+      "profesorId": "7b13",
+      "profesorNombre": "barry",
+      "respuesta": "hola 2",
+      "respondidoPor": "barry",
+      "fechaRespuesta": "2025-09-02T15:37:28.585Z"
+    },
+    {
+      "id": "562a",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "hola2",
+      "fechaHora": "2025-09-02T15:38:22.845Z",
+      "estado": "pendiente",
+      "profesorId": "7b13",
+      "profesorNombre": "barry"
+    },
+    {
+      "id": "64f3",
+      "usuarioId": "1",
+      "nombre": "adrian",
+      "consulta": "ddd",
+      "fechaHora": "2025-09-02T15:45:16.347Z",
+      "estado": "pendiente",
+      "profesorId": "7b13",
+      "profesorNombre": "barry"
     }
   ]
 }
